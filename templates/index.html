@@ -1,0 +1,204 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGenie - Learning Assistant</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f4ff;
+            color: #202544;
+        }
+
+        header {
+            background: #5146d8;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin-bottom: 0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 25px auto;
+            padding: 15px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px #00000010;
+        }
+
+        h2 {
+            color: #5146d8;
+            margin-top: 0;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
+            border: 1px solid #cbd0e5;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        button {
+            background: #5146d8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin-top: 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #392eaf;
+        }
+
+        .result {
+            background: #f5f5ff;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .loading {
+            color: #5146d8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>🎓 EduGenie</h1>
+    <p>Google Gemini Powered Learning Assistant</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>💬 Ask a Question</h2>
+        <textarea id="question"
+            placeholder="Enter your question..."></textarea>
+        <button onclick="sendRequest('qa', 'question', 'qaResult')">
+            Get Answer
+        </button>
+        <div id="qaResult" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>📘 Explain a Topic</h2>
+        <textarea id="topic"
+            placeholder="Enter a topic to explain..."></textarea>
+        <button onclick="sendRequest('explain', 'topic', 'explainResult')">
+            Explain
+        </button>
+        <div id="explainResult" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>📝 Generate a Quiz</h2>
+        <textarea id="quiz"
+            placeholder="Enter a topic for the quiz..."></textarea>
+        <button onclick="sendRequest('quiz', 'quiz', 'quizResult')">
+            Generate Quiz
+        </button>
+        <div id="quizResult" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>📄 Text Summarizer</h2>
+        <textarea id="summary"
+            placeholder="Paste your text here..."></textarea>
+        <button onclick="sendRequest('summarize', 'summary', 'summaryResult')">
+            Summarize
+        </button>
+        <div id="summaryResult" class="result"></div>
+    </div>
+
+    <div class="card">
+        <h2>🗺️ Learning Path</h2>
+        <textarea id="learning"
+            placeholder="What do you want to learn?"></textarea>
+        <button onclick="sendRequest('learn/recommendations', 'learning', 'learningResult')">
+            Get Learning Path
+        </button>
+        <div id="learningResult" class="result"></div>
+    </div>
+
+</div>
+
+<footer>
+    <p>EduGenie © 2026 | Your Smart Learning Assistant</p>
+</footer>
+
+<script>
+    async function sendRequest(endpoint, inputId, resultId) {
+        const input = document.getElementById(inputId).value.trim();
+        const result = document.getElementById(resultId);
+
+        if (!input) {
+            result.textContent = "Please enter some text first.";
+            return;
+        }
+
+        result.textContent = "Generating response...";
+
+        try {
+            const response = await fetch("/" + endpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ text: input })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                result.textContent = data.error;
+            } else {
+                result.textContent =
+                    typeof data.result === "string"
+                    ? data.result
+                    : JSON.stringify(data.result, null, 2);
+            }
+        } catch (error) {
+            result.textContent =
+                "Unable to connect. Please try again.";
+        }
+    }
+</script>
+
+</body>
+</html>
